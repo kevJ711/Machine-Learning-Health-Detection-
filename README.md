@@ -1,7 +1,7 @@
 # Machine-Learning-Health-Detection-
 Dectects if someone has a Heart Disease with python using the Public Health Dataset of heart diseases.
 
-My Machine Learning Model that predicts if a user would be diagnosed with heart diseases based on the Public Health Dataset via https://www.kaggle.com/
+My Machine Learning Model that predicts if a user would be diagnosed with heart diseases based on the Public Health Dataset via [https://www.kaggle.com/](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
 
 
 Primary goal: 
@@ -33,6 +33,17 @@ The Random Forest Classifier algorithm was selected for its suitability in binar
 The dataset was split into training and testing sets (80/20 split), and the model was trained on the training set.
 
 This model can be deployed in a web application using scikit_learn 
+
+Here are some screenshot of how the model is deploy in the web app:
+![Example #1](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/bd4c3f45-739f-4221-907e-08195cf37737)
+
+![example #2](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/efb0337e-2b7a-4d4a-91e7-b8d76a2ea8f1)
+
+![example #3](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/a9b0949d-b24f-4bd7-b811-fbec996f0399)
+
+![example #4](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/b2c13de6-38b1-4a57-9135-da9d6ebe37e2)
+
+
 
 IF you have any question, comments, or concerns please reach out! 
   
