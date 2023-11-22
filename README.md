@@ -63,7 +63,8 @@ Here are some screenshot of how the model is deploy in the web app:
 
 ![example #3](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/a9b0949d-b24f-4bd7-b811-fbec996f0399)
 
-![example #4](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/b2c13de6-38b1-4a57-9135-da9d6ebe37e2)
+![example #4](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/8c8d8d7f-65ab-4eaa-bd12-8f66dd363fd2)
+
 
 
 
