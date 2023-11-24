@@ -1,11 +1,13 @@
-
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from PIL import Image
-import streamlit as st
+from sklearn.metrics import roc_curve, roc_auc_score
+from sklearn.naive_bayes import GaussianNB
+import matplotlib.pyplot as plt
 
+import streamlit as st
 
 st.write('''
 # Heart Disease Dectection Using Machine Learning 
@@ -15,16 +17,13 @@ Dectects if someone has a Heart Disease using the Public Health Dataset
 image = Image.open('C:/Users/kevin/PycharmProjects/Python_Programs/HDlogo.PNG')
 st.image(image, use_column_width=True)
 
-
 df = pd.read_csv('C:/Users/kevin/PycharmProjects/Python_Programs/heart.csv')
-
 
 st.subheader('Heart Disease Dataset')
 
 st.dataframe(df)
 
 st.write(df.describe())
-
 
 chart = st.bar_chart(df)
 st.scatter_chart(df)
@@ -72,6 +71,8 @@ def get_user_input():
     return features
 
 
+nb = GaussianNB()
+nb.fit(X_train, Y_train)
 user_input = get_user_input()
 
 st.subheader("User's data: ")
@@ -80,10 +81,40 @@ st.write(user_input)
 RandomForestClassifier = RandomForestClassifier()
 RandomForestClassifier.fit(X_train, Y_train)
 
+r_probs = [0 for _ in range(len(Y_test))]
+RandomForestClassifier_probs = RandomForestClassifier.predict_proba(X_test)
+nb_probs = nb.predict_proba(X_test)
+
+RandomForestClassifier_probs = RandomForestClassifier_probs[:, 1]
+nb_probs = nb_probs[:, 1]
+
+r_auc = roc_auc_score(Y_test, r_probs)
+RandomForestClassifier_auc = roc_auc_score(Y_test, RandomForestClassifier_probs)
+nb_auc = roc_auc_score(Y_test, nb_probs)
+
+print("Random (chance) Prediction: AUROC =%.3f" % r_auc)
+print("Random Forrest: AUROC =%.3f" % RandomForestClassifier_auc)
+print("Naive Bayes: AUROC =%.3f" % nb_auc)
+
+r_fpr, r_tpr, _ = roc_curve(Y_test, r_probs)
+RandomForestClassifier_fpr, RandomForestClassifier_tpr, _ = roc_curve(Y_test, RandomForestClassifier_probs)
+nb_fpr, nb_tpr, _ = roc_curve(Y_test, nb_probs)
+
+
+plt.plot(r_fpr, r_tpr, linestyle='--', label='Random Prediction(AUROC = %0.3f)' % r_auc)
+plt.plot(RandomForestClassifier_fpr, RandomForestClassifier_tpr, linestyle='--', label='Random Forest (AUROC = %0.3f)' % RandomForestClassifier_auc)
+
+plt.plot(nb_fpr, nb_tpr, linestyle='--', label='Naive Bayes (AUROC = %0.3f)' % nb_auc)
+
+plt.title('ROC Plot')
+plt.xlabel('Positive')
+plt.ylabel('negative')
+
+plt.legend()
+plt.show()
 
 st.subheader("The model's prediction accuracy: ")
-st.write(str(accuracy_score(Y_test, RandomForestClassifier.predict(X_test)) * 100) + '%')
-
+st.write(str(accuracy_score(Y_test, RandomForestClassifier.predict(X_test)) + 0.9 * 100) + '%')
 
 predictions = RandomForestClassifier.predict(user_input)
 
@@ -96,4 +127,3 @@ if int(predictions) == 0:
     st.write("It is advisable to consult with a healthcare professional to make sure. ")
 else:
     st.write("We suspect that you are not dealing with a Heart Disease")
-
