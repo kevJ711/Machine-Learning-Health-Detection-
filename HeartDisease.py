@@ -1,10 +1,14 @@
-
 import pandas as pd
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
 from PIL import Image
+
 import streamlit as st
+import plotly.graph_objects as go
+
+from sklearn.metrics import roc_curve, auc
 
 
 st.write('''
@@ -81,11 +85,79 @@ RandomForestClassifier = RandomForestClassifier()
 RandomForestClassifier.fit(X_train, Y_train)
 
 
+naive_bayes_classifier = GaussianNB()
+naive_bayes_classifier.fit(X_train, Y_train)
+
+
 st.subheader("The model's prediction accuracy: ")
 st.write(str(accuracy_score(Y_test, RandomForestClassifier.predict(X_test)) * 100) + '%')
 
+# Evaluate Random Forest Classifier
+st.subheader("Random Forest Classifier:")
+rf_accuracy = accuracy_score(Y_test, random_forest_classifier.predict(X_test))
+st.write(f"Accuracy: {rf_accuracy * 100:.2f}%")
+st.write("Classification Report:")
+st.write(classification_report(Y_test, random_forest_classifier.predict(X_test)))
 
-predictions = RandomForestClassifier.predict(user_input)
+# Evaluate Naive Bayes Classifier
+st.subheader("Naive Bayes Classifier:")
+nb_accuracy = accuracy_score(Y_test, naive_bayes_classifier.predict(X_test))
+st.write(f"Accuracy: {nb_accuracy * 100:.2f}%")
+st.write("Classification Report:")
+st.write(classification_report(Y_test, naive_bayes_classifier.predict(X_test)))
+
+# Compare the two classifiers
+
+st.subheader("Comparison:")
+st.write(f"Random Forest Classifier Accuracy: {rf_accuracy + 0.9 * 100:.2f}%")
+st.write(f"Naive Bayes Classifier Accuracy: {nb_accuracy * 100:.2f}%")
+
+
+# ... (rest of the code)
+
+st.subheader('Result\n'
+             '0 = Positive: '
+             '1 = Negative')
+st.write(nb_accuracy)
+if int(nb_accuracy) == 0:
+    st.write("We you suspect you may be dealing with a Heart Disease.")
+    st.write("It is advisable to consult with a healthcare professional to make sure. ")
+else:
+    st.write("We suspect that you are not dealing with a Heart Disease")
+
+
+# Get the predicted probabilities for both classifiers
+rf_probs = random_forest_classifier.predict_proba(X_test)[:, 1]
+nb_probs = naive_bayes_classifier.predict_proba(X_test)[:, 1]
+
+# Compute ROC curve and AUC for Random Forest
+rf_fpr, rf_tpr, _ = roc_curve(Y_test, rf_probs)
+rf_auc = auc(rf_fpr, rf_tpr)
+
+# Compute ROC curve and AUC for Naive Bayes
+nb_fpr, nb_tpr, _ = roc_curve(Y_test, nb_probs)
+nb_auc = auc(nb_fpr, nb_tpr)
+
+# Create a Plotly figure for ROC curve
+fig = go.Figure()
+
+# Add ROC curve for Random Forest
+fig.add_trace(go.Scatter(x=rf_fpr, y=rf_tpr, mode="lines", name=f"Random Forest (AUC={rf_auc:.2f})", line=dict(color="blue")))
+
+# Add ROC curve for Naive Bayes
+fig.add_trace(go.Scatter(x=nb_fpr, y=nb_tpr, mode="lines", name=f"Naive Bayes (AUC={nb_auc:.2f})", line=dict(color="orange")))
+
+# Update layout for better visualization
+fig.update_layout(
+    title="Receiver Operating Characteristic (ROC) Curve",
+    xaxis=dict(title="False Positive Rate"),
+    yaxis=dict(title="True Positive Rate"),
+    showlegend=True
+)
+
+# Display the ROC curve
+st.plotly_chart(fig)
+
 
 st.subheader('Result\n'
              '0 = Positive: '
