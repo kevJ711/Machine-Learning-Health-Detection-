@@ -4,7 +4,7 @@ Dectects if someone has a Heart Disease with python using the Public Health Data
 
 
 
-My Machine Learning Model that predicts if a user would be diagnosed with heart diseases based on the Public Health Dataset via [https://www.kaggle.com/](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
+My Machine Learning Model that predicts if a user would be diagnosed with heart disease based on the Public Health Dataset via [https://www.kaggle.com/](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset). This trained machine learning model utilized both the random forest and the naive Bayes classifier to test its accuracy in predicting if an individual would have heart disease. 
 
 
 
