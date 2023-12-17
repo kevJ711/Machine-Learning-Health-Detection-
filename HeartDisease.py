@@ -1,6 +1,5 @@
 import pandas as pd
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
 from PIL import Image
@@ -111,8 +110,6 @@ st.write(f"Accuracy: {nb_accuracy * 100:.2f}%")
 st.write("Classification Report:")
 st.write(classification_report(Y_test, naive_bayes_classifier.predict(X_test)))
 
-
-
 # Evaluate XGBooster Classifier
 
 st.subheader("XGBooster Classifier:")
@@ -158,7 +155,7 @@ fig.add_trace(go.Scatter(x=nb_fpr, y=nb_tpr, mode='lines', name=f'Naive Bayes (A
 # Adding the XGBoost ROC curve
 fig.add_trace(go.Scatter(x=xgboost_fpr, y=xgboost_tpr, mode='lines', name=f'XGBoost (AUC={xgboost_auc:.2f})'))
 
-# Seting the the layout
+# Setting the layout
 fig.update_layout(
     title='Receiver Operating Characteristic (ROC) Curve',
     xaxis=dict(title='False Positive Rate'),
@@ -178,22 +175,16 @@ fig.add_trace(go.Scatter(x=nb_fpr, y=nb_tpr, mode='lines', name=f'Naive Bayes (A
 # Adding the XGBoost ROC curve
 fig.add_trace(go.Scatter(x=xgboost_fpr, y=xgboost_tpr, mode='lines', name=f'XGBoost (AUC={xgboost_auc:.2f})'))
 
-# Seting the the layout
-fig.update_layout(
-    title='Receiver Operating Characteristic (ROC) Curve',
-    xaxis=dict(title='False Positive Rate'),
-    yaxis=dict(title='True Positive Rate'),
-    legend=dict(x=0.7, y=0.2),
-)
+
 # Display the results of the random forest model
-print('Result for Random Forest\n0 = Positive, 1 = Negative')
-print(f"Accuracy for Random Forest Classifier: {rf_accuracy * 100:.2f}%")
+st.subheader('Result for Random Forest\n0 = Positive, 1 = Negative')
+st.subheader(f"Accuracy for Random Forest Classifier: {rf_accuracy * 100:.2f}%")
 
 if int(rf_accuracy) == 0:
-    print("By using the rf model We suspect you may be dealing with a Heart Disease.")
-    print("It is advisable to consult with a healthcare professional to make sure.")
+    st.subheader("By using the rf model We suspect you may be dealing with a Heart Disease.")
+    st.subheader("It is advisable to consult with a healthcare professional to make sure.")
 else:
-    print("By using the rf model We suspect that you are not dealing with a Heart Disease")
+    st.subheader("By using the rf model We suspect that you are not dealing with a Heart Disease")
 
 # Displaying the predicted result for Naive Bayes
 st.subheader('\nResult for Naive Bayes\n0 = Positive, 1 = Negative')
