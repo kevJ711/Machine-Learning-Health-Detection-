@@ -1,10 +1,12 @@
 # Machine-Learning-Health-Detection-
 Dectects if someone has a Heart Disease with python using the Public Health Dataset of heart diseases.
 
+Research and Poster Presentation:
+I recently presented a poster on this machine learning model project at the MICRO NANO TECHNOLOGY EDUCATION SPECIAL INTEREST GROUP program. The presentation was well-received, and if you're interested in learning more about my findings, I encourage you to check out the detailed poster.
+https://www.mntesig.net/mntesig-2023-virtual.html
 
 
-
-My Machine Learning Model that predicts if a user would be diagnosed with heart diseases based on the Public Health Dataset via [https://www.kaggle.com/](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
+My Machine Learning Model that predicts if a user would be diagnosed with heart disease based on the Public Health Dataset via [https://www.kaggle.com/](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset). This trained machine learning model utilized both the random forest and the naive Bayes classifier to test its accuracy in predicting if an individual would have heart disease. 
 
 
 
@@ -50,13 +52,13 @@ The target variable is the diagnosis of heart disease, represented as 0 or 1, wh
 
 
 Model Selection and Training: 
-The Random Forest Classifier algorithm was selected for its suitability in binary classification tasks.
+The Random Forest Classifier algorithm was selected for its suitability in binary classification tasks. In the updated version of this model, I used the Naive Bayes classifier to test each classifier's accuracy. 
 
 The dataset was split into training and testing sets (80/20 split), and the model was trained on the training set.
 
 This model can be deployed in a web application using scikit_learn 
 
-Here are some screenshot of how the model is deploy in the web app:
+Here are some screenshots of how the model is deployed in the web app:
 ![Example #1](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/bd4c3f45-739f-4221-907e-08195cf37737)
 
 ![example #2](https://github.com/kevJ711/Machine-Learning-Health-Detection-/assets/76807356/efb0337e-2b7a-4d4a-91e7-b8d76a2ea8f1)
@@ -68,5 +70,5 @@ Here are some screenshot of how the model is deploy in the web app:
 
 
 
-IF you have any question, comments, or concerns please reach out! 
+If you have any questions, comments, or concerns please reach out! 
   

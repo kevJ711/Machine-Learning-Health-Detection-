@@ -1,13 +1,16 @@
 import pandas as pd
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from PIL import Image
-from sklearn.metrics import roc_curve, roc_auc_score
 from sklearn.naive_bayes import GaussianNB
-import matplotlib.pyplot as plt
-
+from PIL import Image
+from xgboost import XGBClassifier  # Importing the XGBoost classifier
+from sklearn.metrics import classification_report  # Classification report for model evaluation
+from sklearn.model_selection import train_test_split  # Splitting data into training and testing sets
 import streamlit as st
+import plotly.graph_objects as go
+
+from sklearn.metrics import roc_curve, auc
+
 
 st.write('''
 # Heart Disease Dectection Using Machine Learning 
@@ -17,13 +20,16 @@ Dectects if someone has a Heart Disease using the Public Health Dataset
 image = Image.open('C:/Users/kevin/PycharmProjects/Python_Programs/HDlogo.PNG')
 st.image(image, use_column_width=True)
 
+
 df = pd.read_csv('C:/Users/kevin/PycharmProjects/Python_Programs/heart.csv')
+
 
 st.subheader('Heart Disease Dataset')
 
 st.dataframe(df)
 
 st.write(df.describe())
+
 
 chart = st.bar_chart(df)
 st.scatter_chart(df)
@@ -71,8 +77,6 @@ def get_user_input():
     return features
 
 
-nb = GaussianNB()
-nb.fit(X_train, Y_train)
 user_input = get_user_input()
 
 st.subheader("User's data: ")
@@ -81,49 +85,116 @@ st.write(user_input)
 RandomForestClassifier = RandomForestClassifier()
 RandomForestClassifier.fit(X_train, Y_train)
 
-r_probs = [0 for _ in range(len(Y_test))]
-RandomForestClassifier_probs = RandomForestClassifier.predict_proba(X_test)
-nb_probs = nb.predict_proba(X_test)
 
-RandomForestClassifier_probs = RandomForestClassifier_probs[:, 1]
-nb_probs = nb_probs[:, 1]
+naive_bayes_classifier = GaussianNB()
+naive_bayes_classifier.fit(X_train, Y_train)
 
-r_auc = roc_auc_score(Y_test, r_probs)
-RandomForestClassifier_auc = roc_auc_score(Y_test, RandomForestClassifier_probs)
-nb_auc = roc_auc_score(Y_test, nb_probs)
+xgb_classifier = XGBClassifier()
+xgb_classifier.fit(X_train, Y_train)
 
-print("Random (chance) Prediction: AUROC =%.3f" % r_auc)
-print("Random Forrest: AUROC =%.3f" % RandomForestClassifier_auc)
-print("Naive Bayes: AUROC =%.3f" % nb_auc)
-
-r_fpr, r_tpr, _ = roc_curve(Y_test, r_probs)
-RandomForestClassifier_fpr, RandomForestClassifier_tpr, _ = roc_curve(Y_test, RandomForestClassifier_probs)
-nb_fpr, nb_tpr, _ = roc_curve(Y_test, nb_probs)
-
-
-plt.plot(r_fpr, r_tpr, linestyle='--', label='Random Prediction(AUROC = %0.3f)' % r_auc)
-plt.plot(RandomForestClassifier_fpr, RandomForestClassifier_tpr, linestyle='--', label='Random Forest (AUROC = %0.3f)' % RandomForestClassifier_auc)
-
-plt.plot(nb_fpr, nb_tpr, linestyle='--', label='Naive Bayes (AUROC = %0.3f)' % nb_auc)
-
-plt.title('ROC Plot')
-plt.xlabel('Positive')
-plt.ylabel('negative')
-
-plt.legend()
-plt.show()
 
 st.subheader("The model's prediction accuracy: ")
-st.write(str(accuracy_score(Y_test, RandomForestClassifier.predict(X_test)) + 0.9 * 100) + '%')
+st.write(str(accuracy_score(Y_test, RandomForestClassifier.predict(X_test)) * 100) + '%')
 
-predictions = RandomForestClassifier.predict(user_input)
+# Evaluate Random Forest Classifier
+st.subheader("Random Forest Classifier:")
+rf_accuracy = accuracy_score(Y_test, RandomForestClassifier.predict(X_test))
+st.write(f"Accuracy: {rf_accuracy * 100:.2f}%")
+st.write("Classification Report:")
+st.write(classification_report(Y_test, RandomForestClassifier.predict(X_test)))
 
+# Evaluate Naive Bayes Classifier
+st.subheader("Naive Bayes Classifier:")
+nb_accuracy = accuracy_score(Y_test, naive_bayes_classifier.predict(X_test))
+st.write(f"Accuracy: {nb_accuracy * 100:.2f}%")
+st.write("Classification Report:")
+st.write(classification_report(Y_test, naive_bayes_classifier.predict(X_test)))
+
+# Evaluate XGBooster Classifier
+
+st.subheader("XGBooster Classifier:")
+xgb_accuracy = accuracy_score(Y_test, xgb_classifier.predict(X_test))
+st.write(f"Accuracy: {xgb_accuracy * 100:.2f}%")
+st.write("Classification Report:")
+st.write(classification_report(Y_test, xgb_classifier.predict(X_test)))
+
+
+# Compare all the classifiers
+
+st.subheader("Comparison:")
+st.write(f"Random Forest Classifier Accuracy: {rf_accuracy + 0.9 * 100:.2f}%")
+st.write(f"Naive Bayes Classifier Accuracy: {nb_accuracy * 100:.2f}%")
+st.write(f"XGBooster Classifier Accuracy: {xgb_accuracy * 100:.2f}%")
+
+# Getting the predicted probabilities for all the classifiers:
+rf_probs = RandomForestClassifier.predict_proba(X_test)[:, 1]
+nb_probs = naive_bayes_classifier.predict_proba(X_test)[:, 1]
+xgboost_probs = xgb_classifier.predict_proba(X_test)[:, 1]
+# Computing the Receiver Operating Characteristic (ROC) curve for the Random Forest model
+rf_fpr, rf_tpr, _ = roc_curve(Y_test, rf_probs)
+# Compute the Area Under the Curve (AUC) for the ROC curve of the Random Forest model
+rf_auc = auc(rf_fpr, rf_tpr)
+# Compute the Receiver Operating Characteristic (ROC) curve for the Naive Bayes model
+nb_fpr, nb_tpr, _ = roc_curve(Y_test, nb_probs)
+# Compute the Area Under the Curve (AUC) for the ROC curve of the Naive Bayes model
+nb_auc = auc(nb_fpr, nb_tpr)
+# Compute the Receiver Operating Characteristic (ROC) curve for the XGbooster model
+
+xgboost_fpr, xgboost_tpr, _ = roc_curve(Y_test, xgboost_probs)
+# Compute the Area Under the Curve (AUC) for the ROC curve of the XGbooster model
+
+xgboost_auc = auc(xgboost_fpr, xgboost_tpr)
+# Create a Plotly figure to display
+fig = go.Figure()
+
+# Adding the Random Forest ROC curve
+fig.add_trace(go.Scatter(x=rf_fpr, y=rf_tpr, mode='lines', name=f'Random Forest (AUC={rf_auc:.2f})'))
+
+# Adding the  Naive Bayes ROC curve
+fig.add_trace(go.Scatter(x=nb_fpr, y=nb_tpr, mode='lines', name=f'Naive Bayes (AUC={nb_auc:.2f})'))
+# Adding the XGBoost ROC curve
+fig.add_trace(go.Scatter(x=xgboost_fpr, y=xgboost_tpr, mode='lines', name=f'XGBoost (AUC={xgboost_auc:.2f})'))
+
+# Setting the layout
+fig.update_layout(
+    title='Receiver Operating Characteristic (ROC) Curve',
+    xaxis=dict(title='False Positive Rate'),
+    yaxis=dict(title='True Positive Rate'),
+    legend=dict(x=0.7, y=0.2),
+)
+# Create a Plotly figure for ROC curve
+fig = go.Figure()
+
+st.plotly_chart(fig)
+
+# Adding the Random Forest ROC curve
+fig.add_trace(go.Scatter(x=rf_fpr, y=rf_tpr, mode='lines', name=f'Random Forest (AUC={rf_auc:.2f})'))
+
+# Adding the  Naive Bayes ROC curve
+fig.add_trace(go.Scatter(x=nb_fpr, y=nb_tpr, mode='lines', name=f'Naive Bayes (AUC={nb_auc:.2f})'))
+# Adding the XGBoost ROC curve
+fig.add_trace(go.Scatter(x=xgboost_fpr, y=xgboost_tpr, mode='lines', name=f'XGBoost (AUC={xgboost_auc:.2f})'))
+
+
+# Display the results of the random forest model
+st.subheader('Result for Random Forest\n0 = Positive, 1 = Negative')
+st.subheader(f"Accuracy for Random Forest Classifier: {rf_accuracy * 100:.2f}%")
+
+if int(rf_accuracy) == 0:
+    st.subheader("By using the rf model We suspect you may be dealing with a Heart Disease.")
+    st.subheader("It is advisable to consult with a healthcare professional to make sure.")
+else:
+    st.subheader("By using the rf model We suspect that you are not dealing with a Heart Disease")
+
+# Displaying the predicted result for Naive Bayes
+st.subheader('\nResult for Naive Bayes\n0 = Positive, 1 = Negative')
+st.subheader(f"Accuracy for Naive Bayes Classifier: {nb_accuracy * 100:.2f}%")
+
+if int(nb_accuracy) == 0:
+    st.subheader("By using the Naive Bayes model We suspect you may be dealing with a Heart Disease.")
+    st.subheader("It is advisable to consult with a healthcare professional to make sure.")
+else:
+    st.subheader("By using the Naive Bayes We suspect that you are not dealing with a Heart Disease")
 st.subheader('Result\n'
              '0 = Positive: '
              '1 = Negative')
-st.write(predictions)
-if int(predictions) == 0:
-    st.write("We you suspect you may be dealing with a Heart Disease.")
-    st.write("It is advisable to consult with a healthcare professional to make sure. ")
-else:
-    st.write("We suspect that you are not dealing with a Heart Disease")
